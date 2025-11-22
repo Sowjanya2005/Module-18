@@ -1,23 +1,22 @@
-# Ex. No: 18E - Count the Number of Triangles in an Undirected Graph
+# Ex. No: 18C - Dijkstra's Single Source Shortest Path Algorithm
 
 ## AIM:
-To write a Python program to **count the number of triangles** present in an **undirected graph** using matrix operations.
+To write a Python program for **Dijkstra's single source shortest path algorithm**.
 
 ## ALGORITHM:
 
-**Step 1**: Initialize a matrix `aux2` to store the square of the adjacency matrix (i.e., `graph²`).  
-Also, initialize a matrix `aux3` to store the cube of the adjacency matrix (i.e., `graph³`).
+**Step 1**: Initialize a `distance[]` array with infinity for all vertices except the source, which is set to `0`.  
+Create a `sptSet[]` array (shortest path tree set) to keep track of vertices whose shortest distance from the source is finalized.
 
-**Step 2**: Multiply the adjacency matrix with itself to compute `aux2 = graph × graph`.
+**Step 2**: Pick the vertex `u` with the minimum distance value from the set of vertices not yet processed.
 
-**Step 3**: Multiply `aux2` with the adjacency matrix again to compute `aux3 = aux2 × graph`.
+**Step 3**: For every adjacent vertex `v` of the picked vertex `u`, if the current distance to `v` is greater than the distance to `u` plus the edge weight `(u, v)`, then update the distance of `v`.
 
-**Step 4**: Compute the **trace** of the matrix `aux3` (i.e., the sum of diagonal elements of the matrix).
+**Step 4**: Mark the vertex `u` as processed in `sptSet`.
 
-**Step 5**: Divide the trace by **6** to get the number of triangles in the graph.  
-*(Each triangle is counted six times in the trace — twice per vertex and once per direction.)*
+**Step 5**: Repeat Steps 2–4 until all vertices are processed.
 
-**Step 6**: Return the result.
+**Step 6**: Print the shortest distances from the source to all other vertices.
 
 ## PYTHON PROGRAM
 
@@ -25,33 +24,62 @@ Also, initialize a matrix `aux3` to store the cube of the adjacency matrix (i.e.
 Reg.No: 212222060250
 Name: Sowjanya A
 
-import numpy as np
+import sys
 
-def count_triangles(graph):
-    adj_matrix = np.array(graph)
+class Dijkstra:
+    def __init__(self, graph):
+        self.graph = graph
+        self.V = len(graph)
 
-    aux2 = np.matmul(adj_matrix, adj_matrix)
-    aux3 = np.matmul(aux2, adj_matrix)
+    def min_distance(self, dist, sptSet):
+        min_val = sys.maxsize
+        min_index = -1
+        for v in range(self.V):
+            if dist[v] < min_val and not sptSet[v]:
+                min_val = dist[v]
+                min_index = v
+        return min_index
 
-    trace = np.trace(aux3)
-    triangle_count = trace // 6
+    def dijkstra(self, src):
+        dist = [sys.maxsize] * self.V
+        dist[src] = 0
+        sptSet = [False] * self.V
 
-    return triangle_count
+        for _ in range(self.V):
+            u = self.min_distance(dist, sptSet)
+            sptSet[u] = True
+            for v in range(self.V):
+                if (self.graph[u][v] > 0 and not sptSet[v] and 
+                    dist[u] + self.graph[u][v] < dist[v]):
+                    dist[v] = dist[u] + self.graph[u][v]
+
+        self.print_solution(dist)
+
+    def print_solution(self, dist):
+        print("Vertex \tDistance from Source")
+        for i in range(self.V):
+            print(i, "\t", dist[i])
 
 graph = [
-    [0, 1, 1, 0],
-    [1, 0, 1, 1],
-    [1, 1, 0, 1],
-    [0, 1, 1, 0]
+    [0, 4, 0, 0, 0, 0, 0, 8, 0],
+    [4, 0, 8, 0, 0, 0, 0, 11, 0],
+    [0, 8, 0, 7, 0, 4, 0, 0, 2],
+    [0, 0, 7, 0, 9, 14, 0, 0, 0],
+    [0, 0, 0, 9, 0, 10, 0, 0, 0],
+    [0, 0, 4, 14, 10, 0, 2, 0, 0],
+    [0, 0, 0, 0, 0, 2, 0, 1, 6],
+    [8, 11, 0, 0, 0, 0, 1, 0, 7],
+    [0, 0, 2, 0, 0, 0, 6, 7, 0]
 ]
 
-print("Number of triangles:", count_triangles(graph))
+d = Dijkstra(graph)
+d.dijkstra(0)
 
 ```
 
 ## OUTPUT
-![image](https://github.com/user-attachments/assets/c5592dcb-de58-4098-8b85-6ce044cbcbe7)
+![image](https://github.com/user-attachments/assets/5ca13d3b-86f2-4ae2-9f5e-b31804edcde1)
 
 
 ## RESULT
-Thus, the python function to accept a string, identify a word to be replaced, and replace it with a new word provided by the user has been executed and verified successfully.
+Thus, the python program for **Dijkstra's single source shortest path algorithm has been executed and verified successfully.
